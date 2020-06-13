@@ -11,7 +11,7 @@
 (function() {
     'use strict';
     
-    if(user_premium == false) return false;
+    if(!user_premium) return false;
 
     var buildingId = $('#back_to_personals').attr('href').replace('/buildings/','').replace('/personals','');
 
