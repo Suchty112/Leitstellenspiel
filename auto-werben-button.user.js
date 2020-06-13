@@ -13,6 +13,6 @@
 
     var buildingId = $('#back_to_personals').attr('href').replace('/buildings/','').replace('/personals','');
 
-    $("a[href*='/hire_do/3']").after(`<a href="/buildings/${buildingId}/hire_do/automatic" class="btn btn-default">automatisch werben</a`);
+    $("a[href*='/hire_do/3']").after(`<a href="/buildings/${buildingId}/hire_do/automatic" class="btn btn-default">automatisch</a`);
 
 })();
