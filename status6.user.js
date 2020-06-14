@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Status 6
-// @version      1.1.0
+// @version      1.1.1
 // @author       DrTraxx
 // @include      *://www.leitstellenspiel.de/
 // @include      *://leitstellenspiel.de/
@@ -98,8 +98,6 @@
     loadApi();
 
     function createTable(vehicles, buildings) {
-        $('#tableStatus6Body').html('');
-
         let intoTable =
                 `<table class="table">
                  <thead>
@@ -126,6 +124,8 @@
                       </table>`;
 
         $('#tableStatus6Body').html(intoTable);
+        buildingDatabase = [];
+        vehicleDatabaseFms6 = [];
     }
 
     $("body").on("click", "#fms_6", function(){
