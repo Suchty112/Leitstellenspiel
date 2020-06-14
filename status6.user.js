@@ -2,8 +2,8 @@
 // @name         Status 6
 // @version      1.0.0
 // @author       DrTraxx
-// @include      *://www.leitstellenspiel.de/*
-// @include      *://leitstellenspiel.de/*
+// @include      *://www.leitstellenspiel.de/
+// @include      *://leitstellenspiel.de/
 // @grant        GM_addStyle
 // @grant        nune
 // ==/UserScript==
