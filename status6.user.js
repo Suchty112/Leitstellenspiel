@@ -1,11 +1,10 @@
 // ==UserScript==
 // @name         Status 6
-// @version      1.0.0
+// @version      1.1.0
 // @author       DrTraxx
 // @include      *://www.leitstellenspiel.de/
 // @include      *://leitstellenspiel.de/
-// @grant        GM_addStyle
-// @grant        nune
+// @grant        none
 // ==/UserScript==
 /* global $ */
 
@@ -116,9 +115,9 @@
         for(let i = 0; i < vehicles.length; i++){
             intoTable +=
                 `<tr>
-                 <td class="col">${vehicles[i].name}</td>
+                 <td class="col"><a class="lightbox-open" href="/vehicles/${vehicles[i].id}">${vehicles[i].name}</a></td>
                  <td class="col">${vehicleDatabase[vehicles[i].typeId].name}</td>
-                 <td class="col"><a class="lightbox-open" href="/vehicles/${vehicles[i].id}">${vehicles[i].id}</a></td>
+                 <td class="col"><a class="lightbox-open" href="/vehicles/${vehicles[i].id}/zuweisung">${vehicles[i].id}</a></td>
                  <td class="col"><a class="lightbox-open" href="/buildings/${vehicles[i].buildingId}">${buildingDatabase.filter(e => e.id == vehicles[i].buildingId)[0].name}</a></td>
                  </tr>`;
         }
