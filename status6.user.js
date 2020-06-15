@@ -97,6 +97,8 @@
     }
 
     function createTable(vehicles, buildings) {
+        vehicles = vehicleDatabaseFms6;
+        buildings = buildingDatabase;
         let intoLabel =
                 `Fahrzeuge im Status 6<span style="margin-left:40em">${vehicles.length.toLocaleString()} Fahrzeuge</span>`;
         let intoTable =
@@ -133,7 +135,7 @@
     $("body").on("click", "#fms_6", function(){
         loadApi();
         setTimeout(function(){
-            createTable(vehicleDatabaseFms6, buildingDatabase);
+            createTable();
         }, 2000);
     });
 
