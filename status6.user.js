@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Status 6
-// @version      1.3.1
+// @version      2.0.0
 // @author       DrTraxx
 // @include      *://www.leitstellenspiel.de/
 // @include      *://leitstellenspiel.de/
@@ -34,6 +34,14 @@
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
+                            <div class="btn-group btn-group-sm">
+                             <button type="button" id="sortNameUp" class="btn btn-dark">Name aufsteigend</button>
+                             <button type="button" id="sortNameDn" class="btn btn-dark">Name absteigend</button>
+                             <button type="button" id="sortNameBdUp" class="btn btn-dark">Wache aufsteigend</button>
+                             <button type="button" id="sortNameBdDn" class="btn btn-dark">Wache absteigend</button>
+                             <button type="button" id="sortNameTypeUp" class="btn btn-dark">Typ aufsteigend</button>
+                             <button type="button" id="sortNameTypeDn" class="btn btn-dark">Typ absteigend</button>
+                            </div><br>
                                 <h5 class="modal-title" id="tableStatus6Label">
                                 </h5>
                                 <button type="button"
@@ -127,15 +135,42 @@
 
         $('#tableStatus6Label').html(intoLabel)
         $('#tableStatus6Body').html(intoTable);
-        buildingDatabase.length = 0;
-        vehicleDatabaseFms6.length = 0;
     }
 
     $("body").on("click", "#fms_6", function(){
+        buildingDatabase.length = 0;
+        vehicleDatabaseFms6.length = 0;
         loadApi();
-        setTimeout(function(){
-            createTable();
-        }, 2000);
+    });
+
+    $("body").on("click", "#sortNameUp", function(){
+        vehicleDatabaseFms6.sort((a, b) => a.name > b.name);
+        createTable();
+    });
+
+    $("body").on("click", "#sortNameDn", function(){
+        vehicleDatabaseFms6.sort((a, b) => a.name < b.name);
+        createTable();
+    });
+
+    $("body").on("click", "#sortNameBdUp", function(){
+        vehicleDatabaseFms6.sort((a, b) => a.buildingId > b.buildingId);
+        createTable();
+    });
+
+    $("body").on("click", "#sortNameBdDn", function(){
+        vehicleDatabaseFms6.sort((a, b) => a.buildingId < b.buildingId);
+        createTable();
+    });
+
+    $("body").on("click", "#sortNameTypeUp", function(){
+        vehicleDatabaseFms6.sort((a, b) => a.typeId > b.typeId);
+        createTable();
+    });
+
+    $("body").on("click", "#sortNameTypeDn", function(){
+        vehicleDatabaseFms6.sort((a, b) => a.typeId < b.typeId);
+        createTable();
     });
 
 })();
