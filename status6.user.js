@@ -100,7 +100,7 @@
 
     function createTable(vehicles, buildings) {
         let intoLabel =
-                `Fahrzeuge im Status 6: ${vehicles.length.toLocaleString()} Fahrzeuge`;
+                `Fahrzeuge im Status 6<span style="margin-left:40em">${vehicles.length.toLocaleString()} Fahrzeuge</span>`;
         let intoTable =
                 `<table class="table">
                  <thead>
