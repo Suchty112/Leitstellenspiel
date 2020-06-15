@@ -96,9 +96,8 @@
         });
     }
 
-    function createTable(vehicles, buildings) {
+    function createTable(vehicles) {
         vehicles = vehicleDatabaseFms6;
-        buildings = buildingDatabase;
         let intoLabel =
                 `Fahrzeuge im Status 6<span style="margin-left:40em">${vehicles.length.toLocaleString()} Fahrzeuge</span>`;
         let intoTable =
@@ -128,8 +127,8 @@
 
         $('#tableStatus6Label').html(intoLabel)
         $('#tableStatus6Body').html(intoTable);
-        buildingDatabase = [];
-        vehicleDatabaseFms6 = [];
+        buildingDatabase.length = 0;
+        vehicleDatabaseFms6.length = 0;
     }
 
     $("body").on("click", "#fms_6", function(){
