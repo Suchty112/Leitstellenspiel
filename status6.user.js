@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Status 6
-// @version      2.0.0
+// @version      2.1.0
 // @author       DrTraxx
 // @include      *://www.leitstellenspiel.de/
 // @include      *://leitstellenspiel.de/
@@ -34,16 +34,18 @@
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                            <div class="btn-group btn-group-sm">
-                             <button type="button" id="sortNameUp" class="btn btn-dark">Name aufsteigend</button>
-                             <button type="button" id="sortNameDn" class="btn btn-dark">Name absteigend</button>
-                             <button type="button" id="sortNameBdUp" class="btn btn-dark">Wache aufsteigend</button>
-                             <button type="button" id="sortNameBdDn" class="btn btn-dark">Wache absteigend</button>
-                             <button type="button" id="sortNameTypeUp" class="btn btn-dark">Typ aufsteigend</button>
-                             <button type="button" id="sortNameTypeDn" class="btn btn-dark">Typ absteigend</button>
-                            </div><br>
-                                <h5 class="modal-title" id="tableStatus6Label">
-                                </h5>
+                             <div class="btn-group btn-group-sm">
+                              <button type="button" id="sortNameUp" class="btn btn-success">Name aufsteigend</button>
+                              <button type="button" id="sortNameDn" class="btn btn-success">Name absteigend</button>
+                             </div>
+                             <div class="btn-group btn-group-sm">
+                              <button type="button" id="sortNameBdUp" class="btn btn-info">Wache aufsteigend</button>
+                              <button type="button" id="sortNameBdDn" class="btn btn-info">Wache absteigend</button>
+                             </div>
+                             <div class="btn-group btn-group-sm">
+                              <button type="button" id="sortNameTypeUp" class="btn btn-primary">Typ aufsteigend</button>
+                              <button type="button" id="sortNameTypeDn" class="btn btn-primary">Typ absteigend</button>
+                             </div>
                                 <button type="button"
                                         class="close"
                                         data-dismiss="modal"
@@ -51,10 +53,13 @@
                                 >
                                     <span aria-hidden="true">&times;</span>
                                 </button>
+                            <br>
+                                <h5 class="modal-title" id="tableStatus6Label">
+                                </h5>
                             </div>
                             <div class="modal-body" id="tableStatus6Body"></div>
                             <div class="modal-footer">
-                                v${GM_info.script.version}
+                                v ${GM_info.script.version}
                                 <button type="button"
                                         id="tableStatus6CloseButton"
                                         class="btn btn-danger"
@@ -107,7 +112,8 @@
     function createTable(vehicles) {
         vehicles = vehicleDatabaseFms6;
         let intoLabel =
-                `Fahrzeuge im Status 6<span style="margin-left:40em">${vehicles.length.toLocaleString()} Fahrzeuge</span>`;
+                `<div class="pull-left">Fahrzeuge im Status 6</div>
+                 <div Class="pull-right">${vehicles.length.toLocaleString()} Fahrzeuge</div>`;
         let intoTable =
                 `<table class="table">
                  <thead>
