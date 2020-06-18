@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Status 6
-// @version      2.1.0
+// @version      2.2.0
 // @author       DrTraxx
 // @include      *://www.leitstellenspiel.de/
 // @include      *://leitstellenspiel.de/
@@ -20,6 +20,10 @@
     var vehicleDatabaseFms6 = [];
 
     $.getJSON('https://lss-manager.de/api/cars.php?lang=de_DE').done(function(data){
+        var mapObj = {"ï¿½": "Ö", "Ã¶": "ö", "Ã¼": "ü"};
+        $.each(data, (k,v) => {
+            v.name = v.name.replace(new RegExp(Object.keys(mapObj).join("|"),"gi"), matched => mapObj[matched])
+        });
         vehicleDatabase = data;
     });
 
@@ -118,6 +122,7 @@
                 `<table class="table">
                  <thead>
                  <tr>
+                 <th class="col-1">FMS</th>
                  <th class="col">Kennung</th>
                  <th class="col">Fahrzeugtyp</th>
                  <th class="col">Personalzuweisung</th>
@@ -129,6 +134,7 @@
         for(let i = 0; i < vehicles.length; i++){
             intoTable +=
                 `<tr>
+                 <td class="col-1"><span class="building_list_fms building_list_fms_6" id="tableFms_${vehicles[i].id}">${vehicles[i].status}</span>
                  <td class="col"><a class="lightbox-open" href="/vehicles/${vehicles[i].id}">${vehicles[i].name}</a></td>
                  <td class="col">${!vehicles[i].ownClass ? vehicleDatabase[vehicles[i].typeId].name : vehicles[i].ownClass}</td>
                  <td class="col"><a class="lightbox-open" href="/vehicles/${vehicles[i].id}/zuweisung"><button type="button" class="btn btn-default btn-xs">Personalzuweisung</button></a></td>
@@ -139,14 +145,28 @@
         intoTable += `</tbody>
                       </table>`;
 
-        $('#tableStatus6Label').html(intoLabel)
+        $('#tableStatus6Label').html(intoLabel);
         $('#tableStatus6Body').html(intoTable);
     }
 
     $("body").on("click", "#fms_6", function(){
+        $('#tableStatus6Label').html('');
+        $('#tableStatus6Body').html('');
         buildingDatabase.length = 0;
         vehicleDatabaseFms6.length = 0;
         loadApi();
+    });
+
+    $("body").on("click", "#tableStatus6Body span", function(){
+        if($(this)[0].className == "building_list_fms building_list_fms_6"){
+            $.get('/vehicles/' + $(this)[0].id.replace('tableFms_','') + '/set_fms/2');
+            $(this).toggleClass('building_list_fms building_list_fms_6 building_list_fms building_list_fms_2');
+            $(this).text('2');
+        } else {
+            $.get('/vehicles/' + $(this)[0].id.replace('tableFms_','') + '/set_fms/6');
+            $(this).toggleClass('building_list_fms building_list_fms_6 building_list_fms building_list_fms_2');
+            $(this).text('6');
+        }
     });
 
     $("body").on("click", "#sortNameUp", function(){
