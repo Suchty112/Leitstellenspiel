@@ -150,8 +150,8 @@
     }
 
     $("body").on("click", "#fms_6", function(){
-        $('#tableStatus6Label').html('');
-        $('#tableStatus6Body').html('');
+        $('#tableStatus6Label').html('<center><h5>Status-6-Manager</h5></center>');
+        $('#tableStatus6Body').html('<center><h5>Bitte Sortierung wählen.</h5></center>');
         buildingDatabase.length = 0;
         vehicleDatabaseFms6.length = 0;
         loadApi();
