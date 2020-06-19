@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Status 6
-// @version      2.2.1
+// @version      2.3.0
 // @author       DrTraxx
 // @include      *://www.leitstellenspiel.de/
 // @include      *://leitstellenspiel.de/
@@ -15,9 +15,19 @@
         $('#menu_profile').parent().before('<li><a class="btn btn-dark" id="fms_6" data-toggle="modal" data-target="#tableStatus6" >Status 6: ' + data[6].toLocaleString() + '</a></li>');
     });
 
+    var filterFwVehicles = true; //buildingTypeIds: 0, 18
+    var filterRdVehicles = true; //buildingTypeIds: 2, 20
+    var filterThwVehicles = true; //buildingTypeIds: 9
+    var filterPolVehicles = true; //buildingTypeIds: 6, 19
+    var filterWrVehicles = true; //buildingTypeIds: 15
+    var filterHeliVehicles = true; //buildingTypeIds: 5, 13
+    var filterBpVehicles = true; //buildingTypeIds: 11, 17
+    var filterSegVehicles = true; //buildingTypeIds: 12, 21
+    var filterAction = false;
     var vehicleDatabase = {};
-    var buildingDatabase = [];
-    var vehicleDatabaseFms6 = [];
+    var getBuildingTypeId = {};
+    var getBuildingName = {};
+    var vehicleDatabaseFms = {};
 
     $.getJSON('https://lss-manager.de/api/cars.php?lang=de_DE').done(function(data){
         var mapObj = {"ï¿½": "Ö", "Ã¶": "ö", "Ã¼": "ü"};
@@ -58,25 +68,28 @@ overflow-y: auto;
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                             <div class="btn-group btn-group-sm">
-                              <button type="button" id="sortNameUp" class="btn btn-success">Name aufsteigend</button>
-                              <button type="button" id="sortNameDn" class="btn btn-success">Name absteigend</button>
-                             </div>
-                             <div class="btn-group btn-group-sm">
-                              <button type="button" id="sortNameBdUp" class="btn btn-info">Wache aufsteigend</button>
-                              <button type="button" id="sortNameBdDn" class="btn btn-info">Wache absteigend</button>
-                             </div>
-                             <div class="btn-group btn-group-sm">
-                              <button type="button" id="sortNameTypeUp" class="btn btn-primary">Typ aufsteigend</button>
-                              <button type="button" id="sortNameTypeDn" class="btn btn-primary">Typ absteigend</button>
-                             </div>
-                                <button type="button"
+                               <button type="button"
                                         class="close"
                                         data-dismiss="modal"
                                         aria-label="Close"
                                 >
                                     <span aria-hidden="true">&times;</span>
                                 </button>
+                             <div class="pull-left">
+                              <select class="custom-select" id="tableSort">
+                               <option selected>Sortierung wählen</option>
+                              </select>
+                             </div><br><br>
+                             <div class="pull-left">
+                              <a id="filterFw" class="label label-success">Feuerwehr</a>
+                              <a id="filterRd" class="label label-success">Rettungsdienst</a>
+                              <a id="filterThw" class="label label-success">THW</a>
+                              <a id="filterPol" class="label label-success">Polizei</a>
+                              <a id="filterWr" class="label label-success">Wasserrettung</a>
+                              <a id="filterHeli" class="label label-success">Hubschrauber</a>
+                              <a id="filterBp" class="label label-success">BePo/Pol-Sonder</a>
+                              <a id="filterSeg" class="label label-success">SEG/RHS</a>
+                             </div>
                             <br>
                                 <h5 class="modal-title" id="tableStatus6Label">
                                 </h5>
@@ -96,6 +109,11 @@ overflow-y: auto;
                     </div>
                 </div>`);
 
+    var sortOptions = ['Name-aufsteigend','Name-absteigend','Wache-aufsteigend','Wache-absteigend','Typ-aufsteigend','Typ-absteigend'];
+    for(var i = 0; i < sortOptions.length; i++){
+        $('#tableSort').append(`<option value="${sortOptions[i]}">${sortOptions[i]}</option>`);
+    }
+
     function loadApi(){
 
         $.getJSON('/api/vehicle_states').done(function(data){
@@ -104,37 +122,92 @@ overflow-y: auto;
 
         $.getJSON('/api/buildings').done(function(data){
             $.each(data, function(key, item){
-                buildingDatabase.push({"id": item.id, "name": item.caption});
+                getBuildingTypeId[item.id] = item.building_type;
+                getBuildingName[item.id] = item.caption;
             });
         });
 
         $.getJSON('/api/vehicles').done(function(data){
-            $.each(data, function(key, item){
-                var pushContent = {"status": item.fms_real, "id": item.id, "name": item.caption, "typeId": item.vehicle_type, "buildingId": item.building_id, "ownClass": item.vehicle_type_caption};
-                switch(item.fms_real){
-                    case 1:
-                        break;
-                    case 2:
-                        break;
-                    case 3:
-                        break;
-                    case 4:
-                        break;
-                    case 5:
-                        break;
-                    case 6: vehicleDatabaseFms6.push(pushContent)
-                        break;
-                    case 7:
-                        break;
-                    case 9:
-                        break;
-                }
-            });
+            vehicleDatabaseFms = data;
         });
     }
 
-    function createTable(vehicles) {
-        vehicles = vehicleDatabaseFms6;
+    function createTable() {
+
+        var vehicles = [];
+
+        $.each(vehicleDatabaseFms, function(key, item){
+            var databaseContent = {"status": item.fms_real, "id": item.id, "name": item.caption, "typeId": item.vehicle_type, "buildingId": item.building_id, "ownClass": item.vehicle_type_caption};
+            if(item.fms_real == 6) vehicles.push(databaseContent);
+        });
+
+        switch($('#tableSort').val()){
+                case "":
+                    break;
+                case "Status":
+                    vehicles.sort((a, b) => a.status > b.status);
+                    break;
+                case "Name-aufsteigend":
+                    vehicles.sort((a, b) => a.name.toUpperCase() > b.name.toUpperCase());
+                    break;
+                case "Name-absteigend":
+                    vehicles.sort((a, b) => a.name.toUpperCase() < b.name.toUpperCase());
+                    break;
+                case "Wache-aufsteigend":
+                    vehicles.sort((a, b) => getBuildingName[a.buildingId].toUpperCase() > getBuildingName[b.buildingId].toUpperCase());
+                    break;
+                case "Wache-absteigend":
+                    vehicles.sort((a, b) => getBuildingName[a.buildingId].toUpperCase() < getBuildingName[b.buildingId].toUpperCase());
+                    break;
+                case "Typ-aufsteigend":
+                    vehicles.sort((a, b) => vehicleDatabase[a.typeId].name.toUpperCase() > vehicleDatabase[b.typeId].name.toUpperCase());
+                    break;
+                case "Typ-absteigend":
+                    vehicles.sort((a, b) => vehicleDatabase[a.typeId].name.toUpperCase() < vehicleDatabase[b.typeId].name.toUpperCase());
+                    break;
+        }
+
+        if(!filterFwVehicles){
+            for(var fw = vehicles.length - 1; fw >= 0; fw--){
+                if(getBuildingTypeId[vehicles[fw].buildingId] == "0" || getBuildingTypeId[vehicles[fw].buildingId] == "18") vehicles.splice(fw,1);
+            }
+        }
+        if(!filterRdVehicles){
+            for(var rd = vehicles.length - 1; rd >= 0; rd--){
+                if(getBuildingTypeId[vehicles[rd].buildingId] == "2" || getBuildingTypeId[vehicles[rd].buildingId] == "20") vehicles.splice(rd,1);
+            }
+        }
+        if(!filterThwVehicles){
+            for(var thw = vehicles.length - 1; thw >= 0; thw--){
+                if(getBuildingTypeId[vehicles[thw].buildingId] == "9") vehicles.splice(thw,1);
+            }
+        }
+        if(!filterPolVehicles){
+            for(var pol = vehicles.length - 1; pol >= 0; pol--){
+                if(getBuildingTypeId[vehicles[pol].buildingId] == "6" || getBuildingTypeId[vehicles[pol].buildingId] == "19") vehicles.splice(pol,1);
+            }
+        }
+        if(!filterWrVehicles){
+            for(var wr = vehicles.length - 1; wr >= 0; wr--){
+                if(getBuildingTypeId[vehicles[wr].buildingId] == "15") vehicles.splice(wr,1);
+            }
+        }
+        if(!filterHeliVehicles){
+            for(var heli = vehicles.length - 1; heli >= 0; heli--){
+                if(getBuildingTypeId[vehicles[heli].buildingId] == "5" || getBuildingTypeId[vehicles[heli].buildingId] == "13") vehicles.splice(heli,1);
+            }
+        }
+        if(!filterBpVehicles){
+            for(var bp = vehicles.length - 1; bp >= 0; bp--){
+                if(getBuildingTypeId[vehicles[bp].buildingId] == "11" || getBuildingTypeId[vehicles[bp].buildingId] == "17") vehicles.splice(bp,1);
+            }
+        }
+        if(!filterSegVehicles){
+            for(var seg = vehicles.length - 1; seg >= 0; seg--){
+                if(getBuildingTypeId[vehicles[seg].buildingId] == "12" || getBuildingTypeId[vehicles[seg].buildingId] == "21") vehicles.splice(seg,1);
+            }
+        }
+
         let intoLabel =
                 `<div class="pull-left">Fahrzeuge im Status 6</div>
                  <div Class="pull-right">${vehicles.length.toLocaleString()} Fahrzeuge</div>`;
@@ -158,7 +231,7 @@ overflow-y: auto;
                  <td class="col"><a class="lightbox-open" href="/vehicles/${vehicles[i].id}">${vehicles[i].name}</a></td>
                  <td class="col">${!vehicles[i].ownClass ? vehicleDatabase[vehicles[i].typeId].name : vehicles[i].ownClass}</td>
                  <td class="col"><a class="lightbox-open" href="/vehicles/${vehicles[i].id}/zuweisung"><button type="button" class="btn btn-default btn-xs">Personalzuweisung</button></a></td>
-                 <td class="col"><a class="lightbox-open" href="/buildings/${vehicles[i].buildingId}">${buildingDatabase.filter(e => e.id == vehicles[i].buildingId)[0].name}</a></td>
+                 <td class="col"><a class="lightbox-open" href="/buildings/${vehicles[i].buildingId}">${getBuildingName[vehicles[i].buildingId]}</a></td>
                  </tr>`;
         }
 
@@ -167,56 +240,186 @@ overflow-y: auto;
 
         $('#tableStatus6Label').html(intoLabel);
         $('#tableStatus6Body').html(intoTable);
+        vehicles.length = 0;
     }
 
     $("body").on("click", "#fms_6", function(){
         $('#tableStatus6Label').html('<center><h5>Status-6-Manager</h5></center>');
-        $('#tableStatus6Body').html('<center><h5>Bitte Sortierung wählen.</h5></center>');
-        buildingDatabase.length = 0;
-        vehicleDatabaseFms6.length = 0;
+        $('#tableStatus6Body').html('');
+        filterAction = false;
+        getBuildingTypeId.length = 0;
+        getBuildingName.length = 0;
+        vehicleDatabaseFms.length = 0;
         loadApi();
     });
 
     $("body").on("click", "#tableStatus6Body span", function(){
         if($(this)[0].className == "building_list_fms building_list_fms_6"){
             $.get('/vehicles/' + $(this)[0].id.replace('tableFms_','') + '/set_fms/2');
-            $(this).toggleClass('building_list_fms building_list_fms_6 building_list_fms building_list_fms_2');
+            $(this).toggleClass('building_list_fms_6 building_list_fms_2');
             $(this).text('2');
         } else {
             $.get('/vehicles/' + $(this)[0].id.replace('tableFms_','') + '/set_fms/6');
-            $(this).toggleClass('building_list_fms building_list_fms_6 building_list_fms building_list_fms_2');
+            $(this).toggleClass('building_list_fms_6 building_list_fms_2');
             $(this).text('6');
         }
     });
 
-    $("body").on("click", "#sortNameUp", function(){
-        vehicleDatabaseFms6.sort((a, b) => a.name > b.name);
+    $("body").on("click", "#tableSort", function(){
+        filterAction = true;
         createTable();
     });
 
-    $("body").on("click", "#sortNameDn", function(){
-        vehicleDatabaseFms6.sort((a, b) => a.name < b.name);
-        createTable();
+    $("body").on("click", "#filterFw", function(){
+        if(filterFwVehicles) {
+            if(filterAction){
+                filterFwVehicles = false;
+                createTable();
+            }
+            else filterFwVehicles = false;
+        }
+        else {
+            if(filterAction) {
+                filterFwVehicles = true;
+                createTable();
+            }
+            else filterFwVehicles = true;
+        }
+
+        $('#filterFw').toggleClass("label-success label-danger");
     });
 
-    $("body").on("click", "#sortNameBdUp", function(){
-        vehicleDatabaseFms6.sort((a, b) => a.buildingId > b.buildingId);
-        createTable();
+    $("body").on("click", "#filterRd", function(){
+        if(filterRdVehicles) {
+            if(filterAction){
+                filterRdVehicles = false;
+                createTable();
+            }
+            else filterRdVehicles = false;
+        }
+        else {
+            if(filterAction) {
+                filterRdVehicles = true;
+                createTable();
+            }
+            else filterRdVehicles = true;
+        }
+
+        $('#filterRd').toggleClass("label-success label-danger");
     });
 
-    $("body").on("click", "#sortNameBdDn", function(){
-        vehicleDatabaseFms6.sort((a, b) => a.buildingId < b.buildingId);
-        createTable();
+    $("body").on("click", "#filterThw", function(){
+        if(filterThwVehicles) {
+            if(filterAction){
+                filterThwVehicles = false;
+                createTable();
+            }
+            else filterThwVehicles = false;
+        }
+        else {
+            if(filterAction) {
+                filterThwVehicles = true;
+                createTable();
+            }
+            else filterThwVehicles = true;
+        }
+
+        $('#filterThw').toggleClass("label-success label-danger");
     });
 
-    $("body").on("click", "#sortNameTypeUp", function(){
-        vehicleDatabaseFms6.sort((a, b) => a.typeId > b.typeId);
-        createTable();
+    $("body").on("click", "#filterPol", function(){
+        if(filterPolVehicles) {
+            if(filterAction){
+                filterPolVehicles = false;
+                createTable();
+            }
+            else filterPolVehicles = false;
+        }
+        else {
+            if(filterAction) {
+                filterPolVehicles = true;
+                createTable();
+            }
+            else filterPolVehicles = true;
+        }
+
+        $('#filterPol').toggleClass("label-success label-danger");
     });
 
-    $("body").on("click", "#sortNameTypeDn", function(){
-        vehicleDatabaseFms6.sort((a, b) => a.typeId < b.typeId);
-        createTable();
+    $("body").on("click", "#filterWr", function(){
+        if(filterWrVehicles) {
+            if(filterAction){
+                filterWrVehicles = false;
+                createTable();
+            }
+            else filterWrVehicles = false;
+        }
+        else {
+            if(filterAction) {
+                filterWrVehicles = true;
+                createTable();
+            }
+            else filterWrVehicles = true;
+        }
+
+        $('#filterWr').toggleClass("label-success label-danger");
+    });
+
+    $("body").on("click", "#filterHeli", function(){
+        if(filterHeliVehicles) {
+            if(filterAction){
+                filterHeliVehicles = false;
+                createTable();
+            }
+            else filterHeliVehicles = false;
+        }
+        else {
+            if(filterAction) {
+                filterHeliVehicles = true;
+                createTable();
+            }
+            else filterHeliVehicles = true;
+        }
+
+        $('#filterHeli').toggleClass("label-success label-danger");
+    });
+
+    $("body").on("click", "#filterBp", function(){
+        if(filterBpVehicles) {
+            if(filterAction){
+                filterBpVehicles = false;
+                createTable();
+            }
+            else filterBpVehicles = false;
+        }
+        else {
+            if(filterAction) {
+                filterBpVehicles = true;
+                createTable();
+            }
+            else filterBpVehicles = true;
+        }
+
+        $('#filterBp').toggleClass("label-success label-danger");
+    });
+
+    $("body").on("click", "#filterSeg", function(){
+        if(filterSegVehicles) {
+            if(filterAction){
+                filterSegVehicles = false;
+                createTable();
+            }
+            else filterSegVehicles = false;
+        }
+        else {
+            if(filterAction) {
+                filterSegVehicles = true;
+                createTable();
+            }
+            else filterSegVehicles = true;
+        }
+
+        $('#filterSeg').toggleClass("label-success label-danger");
     });
 
 })();
