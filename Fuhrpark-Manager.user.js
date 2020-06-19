@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Fuhrpark-Manager
-// @version      1.0.0
+// @version      1.0.1
 // @author       DrTraxx
 // @include      *://www.leitstellenspiel.de/
 // @include      *://leitstellenspiel.de/
@@ -200,25 +200,25 @@ overflow-y: auto;
                 case "":
                     break;
                 case "Status":
-                    tableDatabase.sort((a, b) => a.status > b.status);
+                    tableDatabase.sort((a, b) => a.status > b.status ? 1 : -1);
                     break;
                 case "Name-aufsteigend":
-                    tableDatabase.sort((a, b) => a.name.toUpperCase() > b.name.toUpperCase());
+                    tableDatabase.sort((a, b) => a.name.toUpperCase() > b.name.toUpperCase() ? 1 : -1);
                     break;
                 case "Name-absteigend":
-                    tableDatabase.sort((a, b) => a.name.toUpperCase() < b.name.toUpperCase());
+                    tableDatabase.sort((a, b) => a.name.toUpperCase() > b.name.toUpperCase() ? -1 : 1);
                     break;
                 case "Wache-aufsteigend":
-                    tableDatabase.sort((a, b) => getBuildingName[a.buildingId].toUpperCase() > getBuildingName[b.buildingId].toUpperCase());
+                    tableDatabase.sort((a, b) => getBuildingName[a.buildingId].toUpperCase() > getBuildingName[b.buildingId].toUpperCase() ? 1 : -1);
                     break;
                 case "Wache-absteigend":
-                    tableDatabase.sort((a, b) => getBuildingName[a.buildingId].toUpperCase() < getBuildingName[b.buildingId].toUpperCase());
+                    tableDatabase.sort((a, b) => getBuildingName[a.buildingId].toUpperCase() > getBuildingName[b.buildingId].toUpperCase() ? -1 : 1);
                     break;
                 case "Typ-aufsteigend":
-                    tableDatabase.sort((a, b) => vehicleDatabase[a.typeId].name.toUpperCase() > vehicleDatabase[b.typeId].name.toUpperCase());
+                    tableDatabase.sort((a, b) => vehicleDatabase[a.typeId].name.toUpperCase() > vehicleDatabase[b.typeId].name.toUpperCase() ? 1 : -1);
                     break;
                 case "Typ-absteigend":
-                    tableDatabase.sort((a, b) => vehicleDatabase[a.typeId].name.toUpperCase() < vehicleDatabase[b.typeId].name.toUpperCase());
+                    tableDatabase.sort((a, b) => vehicleDatabase[a.typeId].name.toUpperCase() > vehicleDatabase[b.typeId].name.toUpperCase() ? -1 : 1);
                     break;
             }
             let intoLabel =
