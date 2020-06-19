@@ -227,7 +227,7 @@ overflow-y: auto;
         for(let i = 0; i < vehicles.length; i++){
             intoTable +=
                 `<tr>
-                 <td class="col-1"><span class="building_list_fms building_list_fms_6" id="tableFms_${vehicles[i].id}">${vehicles[i].status}</span>
+                 <td class="col-1"><span style="curser: pointer" class="building_list_fms building_list_fms_6" id="tableFms_${vehicles[i].id}">${vehicles[i].status}</span>
                  <td class="col"><a class="lightbox-open" href="/vehicles/${vehicles[i].id}">${vehicles[i].name}</a></td>
                  <td class="col">${!vehicles[i].ownClass ? vehicleDatabase[vehicles[i].typeId].name : vehicles[i].ownClass}</td>
                  <td class="col"><a class="lightbox-open" href="/vehicles/${vehicles[i].id}/zuweisung"><button type="button" class="btn btn-default btn-xs">Personalzuweisung</button></a></td>
